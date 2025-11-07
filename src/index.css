@@ -1,0 +1,205 @@
+/* LÍMITE ILM - Estilos Base */
+
+:root {
+  /* Colores principales de la identidad */
+  --primary-purple: #8B7FB8;
+  --primary-green: #A4B86D;
+  --primary-blue: #6B9AC4;
+  --primary-pink: #E8A0BF;
+  --sage-green: #9DB884;
+  
+  /* Colores de fondo y texto */
+  --dark-bg: #2C2C2C;
+  --light-bg: #F5F5F5;
+  --white-bg: #FFFFFF;
+  --text-dark: #333333;
+  --text-light: #FFFFFF;
+  --text-gray: #666666;
+  
+  /* Sombras y bordes */
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.2);
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Espaciados */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 4rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 
+               'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-purple);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-blue);
+}
+
+/* Tipografía */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: var(--spacing-sm);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: var(--spacing-sm);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-normal);
+}
+
+/* Botones principales */
+.btn-primary-custom {
+  background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+  color: var(--text-light);
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-light);
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-secondary-custom {
+  background: transparent;
+  color: var(--primary-purple);
+  padding: 12px 30px;
+  border: 2px solid var(--primary-purple);
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.btn-secondary-custom:hover {
+  background: var(--primary-purple);
+  color: var(--text-light);
+}
+
+/* Contenedores */
+.container-custom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-padding {
+  padding: var(--spacing-xl) 0;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .section-padding {
+    padding: var(--spacing-md) 0;
+  }
+}
+
+/* Utilidades */
+.text-purple {
+  color: var(--primary-purple);
+}
+
+.text-green {
+  color: var(--primary-green);
+}
+
+.text-blue {
+  color: var(--primary-blue);
+}
+
+.bg-purple {
+  background-color: var(--primary-purple);
+}
+
+.bg-green {
+  background-color: var(--primary-green);
+}
+
+.bg-blue {
+  background-color: var(--primary-blue);
+}

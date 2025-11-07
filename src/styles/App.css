@@ -1,0 +1,233 @@
+/* LÍMITE ILM - Estilos de la Aplicación */
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding-top: 70px; /* Altura del navbar */
+}
+
+/* Secciones */
+.section {
+  padding: 60px 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.section-title h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  position: relative;
+  display: inline-block;
+}
+
+.section-title h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-purple), var(--primary-blue));
+  border-radius: 2px;
+}
+
+.section-subtitle {
+  color: var(--text-gray);
+  font-size: 1.1rem;
+  margin-top: 15px;
+}
+
+/* Gradientes de fondo */
+.gradient-bg-purple {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
+}
+
+.gradient-bg-green {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--sage-green) 100%);
+}
+
+.gradient-bg-multi {
+  background: linear-gradient(135deg, 
+    var(--primary-purple) 0%, 
+    var(--primary-blue) 50%, 
+    var(--primary-green) 100%);
+}
+
+/* Cards genéricas */
+.card-custom {
+  background: var(--white-bg);
+  border-radius: 15px;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-normal);
+  overflow: hidden;
+  height: 100%;
+}
+
+.card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+}
+
+.card-custom img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-custom-body {
+  padding: 20px;
+}
+
+.card-custom-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.card-custom-text {
+  color: var(--text-gray);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Badges de categorías */
+.category-badge {
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: var(--transition-fast);
+}
+
+.category-badge.biology {
+  background-color: rgba(139, 127, 184, 0.1);
+  color: var(--primary-purple);
+}
+
+.category-badge.chemistry {
+  background-color: rgba(164, 184, 109, 0.1);
+  color: var(--primary-green);
+}
+
+.category-badge.physics {
+  background-color: rgba(107, 154, 196, 0.1);
+  color: var(--primary-blue);
+}
+
+.category-badge.medicine {
+  background-color: rgba(232, 160, 191, 0.1);
+  color: var(--primary-pink);
+}
+
+.category-badge:hover {
+  transform: scale(1.05);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(139, 127, 184, 0.2);
+  border-top-color: var(--primary-purple);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Botones de redes sociales */
+.social-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.social-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.social-btn.instagram {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-btn.twitter {
+  background-color: #1DA1F2;
+}
+
+.social-btn.youtube {
+  background-color: #FF0000;
+}
+
+.social-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Separador decorativo */
+.decorative-divider {
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-purple), var(--primary-blue), var(--primary-green));
+  margin: 30px auto;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section {
+    padding: 40px 0;
+  }
+
+  .section-title h2 {
+    font-size: 2rem;
+  }
+
+  .card-custom img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding-top: 60px;
+  }
+
+  .section-title h2 {
+    font-size: 1.75rem;
+  }
+}
