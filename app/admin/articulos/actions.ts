@@ -15,6 +15,7 @@ function parseFormData(formData: FormData) {
     | "published";
   const cover_image_url =
     String(formData.get("cover_image_url") ?? "").trim() || null;
+  const pdf_url = String(formData.get("pdf_url") ?? "").trim() || null;
 
   let content: Record<string, unknown>;
   try {
@@ -23,7 +24,7 @@ function parseFormData(formData: FormData) {
     content = { type: "doc", content: [{ type: "paragraph" }] };
   }
 
-  return { title, slug, excerpt, content, category_id, status, cover_image_url };
+  return { title, slug, excerpt, content, category_id, status, cover_image_url, pdf_url };
 }
 
 export async function createArticle(formData: FormData) {

@@ -41,6 +41,9 @@ const config: Config = {
           800: "#2a2740",
           900: "#1a1830",
         },
+          denim: "#5C82B1", // Azul Anil/Denim - Academia de Amira
+          lavender: "#7E7BB9", // Lavanda/Violeta Calido - Academia de Amira
+          terracota: "#E06D53", // acento CTA / badge Premium
       },
       boxShadow: {
         // Sombras difuminadas tintadas de índigo, en vez de shadow-xl gris genérico

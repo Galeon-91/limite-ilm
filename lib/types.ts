@@ -6,6 +6,7 @@ export type Category = {
   name: string;
   parent_id: string | null;
   sort_order: number;
+  is_premium: boolean;
 };
 
 export type Article = {
@@ -15,6 +16,8 @@ export type Article = {
   excerpt: string | null;
   content: Record<string, unknown>; // TipTap JSON document
   cover_image_url: string | null;
+  pdf_url: string | null;
+  is_premium: boolean;
   category_id: string | null;
   status: ArticleStatus;
   views: number;
@@ -43,4 +46,15 @@ export type PageView = {
   referrer: string | null;
   visitor_id: string | null;
   created_at: string;
+};
+
+export type Subscriber = {
+  id: string;
+  user_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  status: string;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
 };

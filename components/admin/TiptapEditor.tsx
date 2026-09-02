@@ -4,6 +4,7 @@ import { useEditor, EditorContent, type JSONContent } from "@tiptap/react";
 import { useCallback, useRef, useState } from "react";
 import { tiptapExtensions } from "@/lib/tiptap-extensions";
 import { createClient } from "@/lib/supabase/client";
+import { optimizeImageFile } from "@/lib/image-optimize";
 
 type Props = {
   initialContent: JSONContent;
@@ -40,6 +41,7 @@ function ToolbarButton({
 
 export default function TiptapEditor({ initialContent, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
+  const [skipOptimization, setSkipOptimization] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -61,11 +63,12 @@ export default function TiptapEditor({ initialContent, onChange }: Props) {
       setUploading(true);
       try {
         const supabase = createClient();
-        const ext = file.name.split(".").pop();
+        const optimized = await optimizeImageFile(file, skipOptimization);
+      const ext = optimized.name.split(".").pop();
         const path = `articulos/${crypto.randomUUID()}.${ext}`;
         const { error } = await supabase.storage
           .from("media")
-          .upload(path, file);
+          .upload(path, optimized);
         if (error) throw error;
         const { data } = supabase.storage.from("media").getPublicUrl(path);
         editor.chain().focus().setImage({ src: data.publicUrl }).run();
@@ -76,7 +79,7 @@ export default function TiptapEditor({ initialContent, onChange }: Props) {
         setUploading(false);
       }
     },
-    [editor]
+    [editor, skipOptimization]
   );
 
   if (!editor) return null;
@@ -220,6 +223,17 @@ export default function TiptapEditor({ initialContent, onChange }: Props) {
           e.target.value = "";
         }}
       />
+
+      <div className="flex items-center gap-2 border-t border-electric-100 bg-paper-50/60 px-4 py-1.5">
+        <label className="flex items-center gap-1.5 font-serif text-xs text-ink-800/70">
+          <input
+            type="checkbox"
+            checked={skipOptimization}
+            onChange={(e) => setSkipOptimization(e.target.checked)}
+          />
+          Esta imagen ya esta optimizada (no comprimir)
+        </label>
+      </div>
 
       <div className="px-6 py-5">
         <EditorContent editor={editor} />

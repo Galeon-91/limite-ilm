@@ -19,18 +19,49 @@ const fontSerif = Source_Serif_4({
   display: "swap",
 });
 
+const SITE_DESCRIPTION =
+  "Revista digital de divulgación científica: ciencia y fe, física, astronomía, biología, química, geología, matemáticas y más.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://limiteilm.com"),
   title: {
     default: "Límite ILM — Revista de divulgación científica",
     template: "%s · Límite ILM",
   },
-  description:
-    "Revista digital de divulgación científica: ciencia y fe, física, astronomía, biología, química, geología, matemáticas y más.",
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "ciencia y fe",
+    "divulgación científica",
+    "milagros científicos del Corán",
+    "cosmología",
+    "biología",
+    "física",
+    "astronomía",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/logo192.png",
+  },
   openGraph: {
     type: "website",
     locale: "es_ES",
     siteName: "Límite ILM",
+    url: "https://limiteilm.com",
+    images: ["/logo512.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Límite ILM — Revista de divulgación científica",
+    description: SITE_DESCRIPTION,
+    images: ["/logo512.png"],
   },
 };
 

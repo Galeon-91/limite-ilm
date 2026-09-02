@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { JSONContent } from "@tiptap/react";
 import TiptapEditor from "@/components/admin/TiptapEditor";
 import { createClient } from "@/lib/supabase/client";
+import { optimizeImageFile } from "@/lib/image-optimize";
 import { emptyDoc } from "@/lib/tiptap-extensions";
 import type { ArticleWithCategory, Category } from "@/lib/types";
 import CoverMedia from "@/components/CoverMedia";
@@ -42,6 +43,9 @@ export default function ArticleForm({ article, categories, action }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [coverUrl, setCoverUrl] = useState(article?.cover_image_url ?? "");
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [skipCoverOptimization, setSkipCoverOptimization] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(article?.pdf_url ?? "");
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const contentRef = useRef<HTMLInputElement>(null);
   const currentContent = useRef<JSONContent>(
     (article?.content as JSONContent) ?? emptyDoc
@@ -51,9 +55,10 @@ export default function ArticleForm({ article, categories, action }: Props) {
     setUploadingCover(true);
     try {
       const supabase = createClient();
-      const ext = file.name.split(".").pop();
+      const optimized = await optimizeImageFile(file, skipCoverOptimization);
+      const ext = optimized.name.split(".").pop();
       const path = `portadas/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage.from("media").upload(path, file);
+      const { error } = await supabase.storage.from("media").upload(path, optimized);
       if (error) throw error;
       const { data } = supabase.storage.from("media").getPublicUrl(path);
       setCoverUrl(data.publicUrl);
@@ -65,6 +70,23 @@ export default function ArticleForm({ article, categories, action }: Props) {
     }
   }
 
+  async function handlePdfUpload(file: File) {
+    setUploadingPdf(true);
+    try {
+      const supabase = createClient();
+      const path = `documentos/${crypto.randomUUID()}.pdf`;
+      const { error } = await supabase.storage.from("media").upload(path, file);
+      if (error) throw error;
+      const { data } = supabase.storage.from("media").getPublicUrl(path);
+      setPdfUrl(data.publicUrl);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo subir el PDF.");
+    } finally {
+      setUploadingPdf(false);
+    }
+  }
+
   function handleSubmit(formData: FormData) {
     setError(null);
     if (contentRef.current) {
@@ -72,6 +94,7 @@ export default function ArticleForm({ article, categories, action }: Props) {
     }
     formData.set("content", JSON.stringify(currentContent.current));
     formData.set("cover_image_url", coverUrl);
+    formData.set("pdf_url", pdfUrl);
 
     startTransition(async () => {
       const result = await action(formData);
@@ -222,8 +245,53 @@ export default function ArticleForm({ article, categories, action }: Props) {
               }}
               className="w-full text-sm"
             />
+        <label className="mt-2 flex items-center gap-1.5 font-serif text-xs text-ink-800/70">
+          <input
+            type="checkbox"
+            checked={skipCoverOptimization}
+            onChange={(e) => setSkipCoverOptimization(e.target.checked)}
+          />
+          Ya esta optimizada/o (no comprimir)
+        </label>
             {uploadingCover && (
               <p className="mt-1 font-serif text-xs text-ink-800/60">Subiendo…</p>
+            )}
+          </div>
+
+          <div className="rounded-tr-3xl rounded-bl-3xl border border-electric-100 bg-white p-5 shadow-glow-sm">
+            <label className="mb-2 block font-sans text-sm font-semibold text-ink-900">
+              Documento PDF adjunto
+            </label>
+            {pdfUrl && (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mb-3 block truncate rounded-tr-xl rounded-bl-xl border border-electric-100 px-3 py-2 font-serif text-sm text-electric-700 underline"
+              >
+                {pdfUrl.split("/").pop()}
+              </a>
+            )}
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handlePdfUpload(file);
+              }}
+              className="w-full text-sm"
+            />
+            {uploadingPdf && (
+              <p className="mt-1 font-serif text-xs text-ink-800/60">Subiendo…</p>
+            )}
+            {pdfUrl && (
+              <button
+                type="button"
+                onClick={() => setPdfUrl("")}
+                className="mt-2 font-serif text-xs text-red-600 underline"
+              >
+                Quitar PDF
+              </button>
             )}
           </div>
 

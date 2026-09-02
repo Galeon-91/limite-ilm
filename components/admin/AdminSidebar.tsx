@@ -21,7 +21,7 @@ export default function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-electric-100 bg-white">
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col overflow-y-auto border-r border-electric-100 bg-white">
       <div className="border-b border-electric-100 px-5 py-5">
         <p className="font-sans text-lg font-extrabold text-ink-900">
           Límite <span className="text-electric-600">ILM</span>
@@ -29,7 +29,7 @@ export default function AdminSidebar({ email }: { email: string }) {
         <p className="mt-0.5 truncate font-serif text-xs text-ink-800/60">{email}</p>
       </div>
 
-      <nav className="flex-1 space-y-1 p-3">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
         {LINKS.map((link) => {
           const active =
             link.href === "/admin"

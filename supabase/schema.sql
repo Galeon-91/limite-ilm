@@ -25,6 +25,7 @@ create table if not exists public.categories (
   name text not null,
   parent_id uuid references public.categories (id) on delete set null,
   sort_order integer not null default 0,
+  is_premium boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -41,6 +42,8 @@ create table if not exists public.articles (
   excerpt text,
   content jsonb not null default '{"type":"doc","content":[]}'::jsonb, -- documento TipTap
   cover_image_url text,
+  pdf_url text, -- documento PDF adjunto
+  is_premium boolean not null default false, -- override puntual: fuerza premium/gratis sin importar la categoria
   category_id uuid references public.categories (id) on delete set null,
   status text not null default 'draft' check (status in ('draft', 'published')),
   views integer not null default 0,
@@ -52,6 +55,13 @@ create table if not exists public.articles (
 create index if not exists articles_category_id_idx on public.articles (category_id);
 create index if not exists articles_status_published_at_idx on public.articles (status, published_at desc);
 create index if not exists articles_title_idx on public.articles using gin (to_tsvector('spanish', title));
+
+-- Migracion idempotente: anade pdf_url si el esquema ya existia sin esta columna.
+alter table public.articles add column if not exists pdf_url text;
+-- Migracion idempotente: anade is_premium si el esquema ya existia sin esta
+-- columna (pivote a modelo Freemium).
+alter table public.categories add column if not exists is_premium boolean not null default false;
+alter table public.articles add column if not exists is_premium boolean not null default false;
 
 -- Mantiene updated_at al día en cada UPDATE
 create or replace function public.set_updated_at()
@@ -96,6 +106,26 @@ create table if not exists public.page_views (
 
 create index if not exists page_views_created_at_idx on public.page_views (created_at desc);
 create index if not exists page_views_path_idx on public.page_views (path);
+-- ----------------------------------------------------------------------------
+-- Tabla: subscribers (estado de la membresia premium)
+-- Las escrituras las hace el webhook de Stripe (aun no implementado) con la
+-- service_role key, que bypassa RLS; los lectores solo ven su propia fila.
+-- AVISO: hoy solo existe el usuario admin en Supabase Auth. Antes de que esta
+-- tabla sirva de algo hace falta habilitar registro/login publico de lectores.
+-- ----------------------------------------------------------------------------
+create table if not exists public.subscribers (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  status text not null default 'inactive',
+  current_period_end timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists subscribers_user_id_idx on public.subscribers (user_id);
+comment on table public.subscribers is
+  'Estado de la suscripcion premium, sincronizado por el webhook de Stripe con la service_role key.';
 
 -- ----------------------------------------------------------------------------
 -- Función RPC: incrementa las vistas de un artículo de forma atómica
@@ -116,6 +146,7 @@ alter table public.categories enable row level security;
 alter table public.articles enable row level security;
 alter table public.messages enable row level security;
 alter table public.page_views enable row level security;
+alter table public.subscribers enable row level security;
 
 -- Concede privilegios a nivel de tabla a anon/authenticated.
 -- RLS (arriba) sigue restringiendo el acceso fila a fila; sin este GRANT
@@ -217,6 +248,14 @@ create policy "page_views_admin_read"
 -- ============================================================================
 -- STORAGE — bucket "media" para portadas de artículos e imágenes del editor
 -- ============================================================================
+-- subscribers: cada usuario autenticado solo lee su propia fila; las
+-- escrituras las hace el webhook de Stripe con la service_role key (bypassa RLS)
+drop policy if exists "subscribers_own_read" on public.subscribers;
+create policy "subscribers_own_read"
+on public.subscribers for select
+to authenticated
+using (auth.uid() = user_id);
+
 insert into storage.buckets (id, name, public)
 values ('media', 'media', true)
 on conflict (id) do nothing;
@@ -283,6 +322,16 @@ values
   ('secciones/videos', 'Vídeos', (select id from public.categories where slug = 'secciones'), 2),
   ('secciones/patranas', 'Patrañas', (select id from public.categories where slug = 'secciones'), 3)
 on conflict (slug) do update set name = excluded.name, parent_id = excluded.parent_id, sort_order = excluded.sort_order;
+-- Nueva categoria top-level: la Academia de la Profe Amira (premium; reutiliza
+-- el sistema de articulos existente como "lecciones": TipTap, PDF adjunto,
+-- portada/video ya construidos).
+insert into public.categories (slug, name, parent_id, sort_order, is_premium)
+values ('academia-amira', 'Academia de Amira', null, 7, true)
+on conflict (slug) do update set name = excluded.name, sort_order = excluded.sort_order, is_premium = excluded.is_premium;
+-- Ciencia y Fe pasa a ser contenido premium (pivote a modelo Freemium)
+update public.categories
+set is_premium = true
+where slug = 'ciencia-y-fe' or slug like 'ciencia-y-fe/%';
 
 -- ============================================================================
 -- Fin del esquema. Después de ejecutar esto, crea tu usuario admin en

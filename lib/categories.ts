@@ -7,12 +7,13 @@ export type CategoryDef = {
   slug: string; // ruta completa, p.ej. "ciencias-fisicas/astronomia"
   name: string;
   parentSlug: string | null; // slug completo del padre, o null si es top-level
+  isPremium?: boolean; // true si el contenido requiere membresia premium
 };
 
 export const CATEGORIES: CategoryDef[] = [
-  { slug: "ciencia-y-fe", name: "Ciencia y Fe", parentSlug: null },
-  { slug: "ciencia-y-fe/milagros-del-coran", name: "Milagros del Corán", parentSlug: "ciencia-y-fe" },
-  { slug: "ciencia-y-fe/historia", name: "Historia", parentSlug: "ciencia-y-fe" },
+  { slug: "ciencia-y-fe", name: "Ciencia y Fe", parentSlug: null, isPremium: true },
+  { slug: "ciencia-y-fe/milagros-del-coran", name: "Milagros del Corán", parentSlug: "ciencia-y-fe", isPremium: true },
+  { slug: "ciencia-y-fe/historia", name: "Historia", parentSlug: "ciencia-y-fe", isPremium: true },
 
   { slug: "ciencias-fisicas", name: "Ciencias Físicas", parentSlug: null },
   { slug: "ciencias-fisicas/fisica", name: "Física", parentSlug: "ciencias-fisicas" },
@@ -36,6 +37,7 @@ export const CATEGORIES: CategoryDef[] = [
   { slug: "secciones/respuestas", name: "Respuestas", parentSlug: "secciones" },
   { slug: "secciones/videos", name: "Vídeos", parentSlug: "secciones" },
   { slug: "secciones/patranas", name: "Patrañas", parentSlug: "secciones" },
+  { slug: "academia-amira", name: "Academia de Amira", parentSlug: null, isPremium: true },
 ];
 
 export function categoryName(slug: string): string {

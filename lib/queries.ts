@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { ArticleWithCategory, ContactMessage } from "@/lib/types";
+import type { Article, ArticleWithCategory, ContactMessage } from "@/lib/types";
 
 const ARTICLE_SELECT =
   "*, category:categories(id, slug, name)";
@@ -46,6 +46,18 @@ export async function getArticleBySlug(
 
   if (error || !data) return null;
   return data as unknown as ArticleWithCategory;
+}
+
+export async function getSitemapArticles(): Promise<
+  Pick<Article, "slug" | "updated_at">[]
+> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("slug, updated_at")
+    .eq("status", "published")
+    .order("updated_at", { ascending: false });
+  return (data ?? []) as Pick<Article, "slug" | "updated_at">[];
 }
 
 export async function getPopularArticles(
